@@ -1,4 +1,4 @@
-package com.BankingApp;
+package bankingapp.BankingApplication;
 
 public class JointAccount extends Account{
 	Customer member1;

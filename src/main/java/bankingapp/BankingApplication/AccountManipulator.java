@@ -1,4 +1,4 @@
-package com.BankingApp;
+package bankingapp.BankingApplication;
 
 public interface AccountManipulator {
 	public boolean deposit(Account account, double amount);

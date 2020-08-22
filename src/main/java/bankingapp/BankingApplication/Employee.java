@@ -1,4 +1,4 @@
-package com.BankingApp;
+package bankingapp.BankingApplication;
 
 public class Employee {
 	
