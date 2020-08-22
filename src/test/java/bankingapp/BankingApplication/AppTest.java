@@ -7,27 +7,30 @@ class AppTest {
 
 	Customer c = new Customer("Test","Name");
 	Customer c2 = new Customer("Test","Name2");
-	Account a = new Account(1,0.0,true);
+	Account a = new Account(1,255.0,true);
 	Employee e = new Employee();
 	Administrator ad = new Administrator();
 	Transaction t = new Transaction();
 	
-	
+
+	private void doDeposit() {
+		a.setBalance(a.getBalance() + 45);
+	}
 	
 	@Test
 	void testGetBalance() {
-		Assertions.assertEquals(0.0, a.getBalance());
+		Assertions.assertEquals(255.0, a.getBalance());
 	}
-	
 	
 	
 	@Test
 	void testNewBalance() {
-		Assertions.assertNotEquals(255.0, a.getBalance());
+		doDeposit();
+		Assertions.assertEquals(300.0, a.getBalance());
 	}
 	@Test
 	void testAccountOwner() {
-		Assertions.assertEquals("Test Name", a.getOwner());
+		Assertions.assertEquals("Test Name", c.getFirstName() + " " + c.getLastName());
 	}
 	@Test
 	void testExistsAdministrator() {
