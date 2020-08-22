@@ -1,6 +1,6 @@
 package com.BankingApp;
 
-public class Administrator implements AccountManipulator{
+public class Administrator{
 	
 	/*
 	 * returns true if the account was approved
