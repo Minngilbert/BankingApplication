@@ -81,7 +81,7 @@ public class Employee {
 	 * remove account from the arrayList of Pending accounts
 	 * add to active accounts
 	 */
-	public boolean updateAccount(int  accountId) {	
+	public boolean makeAccountActive(int  accountId) {	
 		Account acc = new Account();
 		
 		for(Account account : acc.getPendingAccounts()) {

@@ -8,31 +8,25 @@ public class Account {
 	private int accountId;
 	private double balance;
 	private boolean pendingApproval;
+	private static int accountGenerator;
 	
 	static ArrayList<Account> activeAccounts = new ArrayList<Account>();
 	static ArrayList<Account> pendingAccounts = new ArrayList<Account>();
 	
 
-	public Account(Customer owner, int accountId, boolean pendingApproval) {
+	public Account(Customer owner, int accountId) {
 		this.member = owner;
 		this.accountId = accountId;
 		this.balance = 0; //Start with a balance of zero
-		this.pendingApproval = pendingApproval;
+		this.pendingApproval = true;
 		this.pendingAccounts.add(this);
-	}
-	
-	public Account(int accountId, boolean pendingApproval) {
-		this.accountId = accountId;
-		this.balance = 0; //Start with a balance of zero
-		this.pendingApproval = pendingApproval;
-		this.pendingAccounts.add(this);
+		accountGenerator++;
 	}
 	
 	public Account() {
 		super();
 	}
 	
-
 	public boolean isPendingApproval() {
 		return pendingApproval;
 	}
@@ -66,7 +60,7 @@ public class Account {
 	}
 	
 	//adds to active accounts array
-	public void addAcctiveAccount(Account activeAccount) {
+	public void addActiveAccount(Account activeAccount) {
 		this.activeAccounts.add(activeAccount);
 	}
 	
@@ -74,6 +68,13 @@ public class Account {
 		return activeAccounts;
 	}
 	
+	public String toString() {
+		return member.getFirstName() + " " + member.getLastName() +" "+ this.accountId + "  " + this.balance; 
+	}
+	
+	public void showAccountInfo() {
+		System.out.println(this.toString());
+	}
 
 	
 }

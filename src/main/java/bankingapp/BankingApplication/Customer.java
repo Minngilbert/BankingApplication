@@ -83,7 +83,7 @@ public class Customer implements AccountManipulator{
 	}
 	
 	public void registerForAccount(int accountNumber) {
-		Account newCustomer = new Account(this, accountNumber,true);
+		Account newCustomer = new Account(this, accountNumber);
 	}
 	
 
