@@ -29,6 +29,11 @@ public class Customer implements AccountManipulator{
 		this.lastName = lastName;
 	}
 	
+	public String getUsername() {
+		return this.username;
+	}
+
+	
 	public void viewAccountInformation() {
 		Account temp = new Account();
 		ArrayList<Account> activeAccounts = temp.getActiveAccounts();
@@ -81,8 +86,25 @@ public class Customer implements AccountManipulator{
 		Account newCustomer = new Account(this, accountNumber,true);
 	}
 	
+
+	public Account getCustomerAccount() {
+		Account acc = new Account();
+		
+		for(Account account : acc.getActiveAccounts()) {
+			if(account.getMember().getUsername() == this.username) {
+					return account;
+			}	
+		}
+		return acc; //might want to throw exception here
+	}
+	
+	public double getAccountBalance() {
+		Account acc = this.getCustomerAccount();
+		return acc.getBalance();
+	}
+	
 	public String toString() {
-		return firstName + " " + lastName;
+		return firstName + " " + lastName +" ";
 	}
 	
 }
