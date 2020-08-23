@@ -8,8 +8,8 @@ class AppTest {
 	Customer c = new Customer("Test","Name");
 	Customer c2 = new Customer("Test","Name2");
 	Account a = new Account(1,255.0,true);
-	Employee e = new Employee();
-	Administrator ad = new Administrator();
+	Employee e = new Employee("TestEm", 123);
+	Administrator ad = new Administrator("TestAdm", 1234);
 	Transaction t = new Transaction();
 	
 

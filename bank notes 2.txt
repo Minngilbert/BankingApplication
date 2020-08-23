@@ -33,7 +33,7 @@ viewAccount(Customer C)
 viewAccountBalance(Customer, Account)
 viewPersonalInformation(Customer C)
 denyAccount(Account A)
-
+updateAccount(Account)
 
 Transaction Actions
 commitTransaction

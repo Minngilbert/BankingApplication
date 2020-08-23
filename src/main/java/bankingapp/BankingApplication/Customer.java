@@ -2,13 +2,15 @@ package bankingapp.BankingApplication;
 
 import java.util.ArrayList;
 
-public class Customer {
+public class Customer implements AccountManipulator{
 	
-	private String firstName, lastName;
+	private String firstName, lastName, username, password;
 	
-	public Customer(String firstName, String lastName) {
+	public Customer(String firstName, String lastName, String username, String password) {
 		this.firstName = firstName;
 		this.lastName = lastName;
+		this.username = username;
+		this.password = password;
 	}
 	
 	public String getFirstName() {
@@ -26,24 +28,61 @@ public class Customer {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-
-	public Object registerForAccount(int AccountNumber) {
-		return null;
-	}
 	
-	public void deposit(int Account,int amount) {
+	public void viewAccountInformation() {
+		Account temp = new Account();
+		ArrayList<Account> activeAccounts = temp.getActiveAccounts();
 		
+		for(Account acc: activeAccounts) {
+			if(acc.getMember() == this) {
+				System.out.println(acc.getMember().toString());
+				System.out.println("Balance : " + acc.getBalance());
+			}
+		}
 	}
-	
 
-	public void withdraw(int Account,int amount) {
+	public double deposit(Account account, double amount) {
+		double currBalance =  account.getBalance();
 		
+		if(amount > 0) {
+			account.setBalance(currBalance + amount);
+		}
+		return account.getBalance();
 	}
-	
-	public void transfer(int Account,int amount) {
+
+	public double withdraw(Account account, double amount) {
+		double currBalance =  account.getBalance();
 		
+		if(currBalance >= amount) {
+			account.setBalance(currBalance - amount);
+		}
+		return account.getBalance();
+	}
+
+	public boolean transfer(Account fromAcc, Account toAcc, double amount) {
+			double beforeTranFr = fromAcc.getBalance();
+			double beforeTranTo = toAcc.getBalance();
+			
+			deposit(toAcc, amount);
+			withdraw(fromAcc, amount);
+
+			double currBalanceFr = fromAcc.getBalance()-amount;
+			double currBalanceTo = toAcc.getBalance() + amount;
+			
+			//check to make sure balance was updated
+			if((beforeTranFr ==  currBalanceFr) && (beforeTranTo ==  currBalanceTo)) {
+				return true;
+			}
+			
+			return false;
 	}
 	
-
-
+	public void registerForAccount(int accountNumber) {
+		Account newCustomer = new Account(this, accountNumber,true);
+	}
+	
+	public String toString() {
+		return firstName + " " + lastName;
+	}
+	
 }

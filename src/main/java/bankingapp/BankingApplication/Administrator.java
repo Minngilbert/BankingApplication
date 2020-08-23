@@ -1,29 +1,32 @@
 package bankingapp.BankingApplication;
 
-public class Administrator{
+public class Administrator extends Employee{
+	private String name;
+	private int employeeId;
 	
-	/*
-	 * returns true if the account was approved
-	 * false if account was not approve
-	 */
-	public boolean approveAccount(int AccountNumber) {
-		return false;
+	public Administrator(String name, int employeeId) {
+		super(name, employeeId);
+		
 	}
-	
 
-	public void withdraw(int Account,int amount) {
-		
+	public String getName() {
+		return name;
 	}
-	
-	public void transfer(int Account,int amount) {
-		
+
+	public void setName(String name) {
+		this.name = name;
 	}
-	
-	public void deposit(int Account,int amount) {
-		
+
+	public int getEmployeeId() {
+		return employeeId;
 	}
-	
-	public void cancelAccount(int Account,int amount) {
-		
+
+	public void setEmployeeId(int employeeId) {
+		this.employeeId = employeeId;
 	}
+
+	public void cancelAccount(Account account) {
+		account.removeActiveAccount(account);		
+	}
+
 }

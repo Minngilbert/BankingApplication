@@ -8,45 +8,37 @@ public class Account {
 	private int accountId;
 	private double balance;
 	private boolean pendingApproval;
-	private static int accountGenerator = 1;
 	
-	ArrayList<Account> pendingAccounts = new ArrayList<Account>();
+	static ArrayList<Account> activeAccounts = new ArrayList<Account>();
+	static ArrayList<Account> pendingAccounts = new ArrayList<Account>();
 	
-	public Account(Customer owner, int accountId, double balance, boolean pendingApproval) {
+
+	public Account(Customer owner, int accountId, boolean pendingApproval) {
 		this.member = owner;
 		this.accountId = accountId;
-		this.balance = balance;
+		this.balance = 0; //Start with a balance of zero
 		this.pendingApproval = pendingApproval;
-		accountGenerator++;
 		this.pendingAccounts.add(this);
 	}
 	
-	public Account(int accountId, double balance, boolean pendingApproval) {
+	public Account(int accountId, boolean pendingApproval) {
 		this.accountId = accountId;
-		this.balance = balance;
+		this.balance = 0; //Start with a balance of zero
 		this.pendingApproval = pendingApproval;
-		accountGenerator++;
 		this.pendingAccounts.add(this);
 	}
 	
+	public Account() {
+		super();
+	}
+	
+
 	public boolean isPendingApproval() {
 		return pendingApproval;
 	}
 
 	public void setPendingApproval(boolean pendingApproval) {
 		this.pendingApproval = pendingApproval;
-	}
-
-	public ArrayList<Account> getPendingAccounts() {
-		return pendingAccounts;
-	}
-
-	public void setPendingAccounts(ArrayList<Account> pendingAccounts) {
-		this.pendingAccounts = pendingAccounts;
-	}
-
-	public Customer getMember() {
-		return this.member;
 	}
 
 	public int getAccountId() {
@@ -56,7 +48,32 @@ public class Account {
 	public double getBalance() {
 		return this.balance;
 	}
+	
 	public void setBalance(double balance) {
 		this.balance = balance;
-	}	
+	}
+	
+	public Customer getMember() {
+		return this.member;
+	}
+	
+	public ArrayList<Account> getPendingAccounts() {
+		return pendingAccounts;
+	}
+	
+	public void removeActiveAccount(Account account) {
+		activeAccounts.remove(account);
+	}
+	
+	//adds to active accounts array
+	public void addAcctiveAccount(Account activeAccount) {
+		this.activeAccounts.add(activeAccount);
+	}
+	
+	public ArrayList<Account> getActiveAccounts() {
+		return activeAccounts;
+	}
+	
+
+	
 }
