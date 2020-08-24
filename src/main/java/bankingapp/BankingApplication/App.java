@@ -470,7 +470,7 @@ public class App {
 					switch (choice) {
 					case 'v':
 						if(verifyAdministrator(user)) {
-							doAdminAccountView(user,a);
+//							doAdminAccountView(user,a);
 							break;
 						}
 						if(verifyEmployee(user)) {
