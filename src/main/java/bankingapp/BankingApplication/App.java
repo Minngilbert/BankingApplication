@@ -1,7 +1,9 @@
 package bankingapp.BankingApplication;
 
-import java.io.Console;
 import java.util.Scanner;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Hello world!
@@ -9,6 +11,8 @@ import java.util.Scanner;
  */
 public class App {
 	private Scanner cons = new Scanner(System.in);
+	private Logger log = LogManager.getLogger(App.class);
+	FileHandler files = new FileHandler();
 
 	public static void main(String[] args) {
 		/*
@@ -34,6 +38,11 @@ public class App {
 
 	public void startUp() {
 		System.out.println("Welcome to the Bank of The Town With No Name\n");
+
+		if (!files.checkFiles()) {
+			System.out.println("No data found, please create an administrator account.");
+			createAdministratorAccount();
+		}
 
 		showMainMenu();
 	}
@@ -127,14 +136,19 @@ public class App {
 
 	public void showCustomerMenu(Customer c) {
 		Account a = null;
-		System.out.println("Welcome, " + c.getFirstName());
-		a = getAnAccount(c);
-		if (a == null) {
-			System.out.println("There are no Active bank accounts yet.  Creating a new one.");
-			a = createNewBankAccount(c);
-		} else
-			System.out.println("Welcome back, " + c.getFirstName() + ".");
-		
+		while (a == null) {
+			System.out.println("Welcome, " + c.getFirstName());
+			a = findAnAccount(c);
+			if (a == null) {
+				System.out.println("There are no Active bank accounts yet.  Creating a new one.");
+				a = createNewBankAccount(c);
+			} else
+				System.out.println("Welcome back, " + c.getFirstName() + ".");
+
+			if (a == null) {
+				System.out.println("Account creation failed.");
+			}
+		}
 		showCustomerAccountActions(c, a);
 	}
 
@@ -154,9 +168,12 @@ public class App {
 					int choice = Integer.parseInt(cons.nextLine());
 					switch (choice) {
 					case 1:
-
+						doDeposit(a);
+						break;
 					case 2:
+						doWithdrawal(a);
 					case 3:
+						doTransfer(a);
 					case 4:
 						isDone = true;
 					default:
@@ -169,11 +186,96 @@ public class App {
 		}
 	}
 
+	public double doDeposit(Account a) {
+		boolean valid = false;
+		while (!valid) {
+			try {
+				System.out.println("Please enter the amount you wish to deposit");
+				double amount = Double.parseDouble(cons.nextLine());
+				if (amount < 0.01) {
+					System.out.println("Cannot deposit less than one cent.");
+				} else {
+					a.setBalance(a.getBalance() + amount);
+					System.out.println(
+							"Successfully deposited $" + amount + " to account.  New balance is $" + a.getBalance());
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input");
+			}
+		}
+		return a.getBalance();
+	}
+
+	public double doWithdrawal(Account a) {
+		boolean valid = false;
+		while (!valid) {
+			try {
+				System.out.println("Please enter the amount you wish to withdraw");
+				double amount = Double.parseDouble(cons.nextLine());
+				if (amount < 0.01) {
+					System.out.println("Cannot withdraw less than one cent.");
+				} else {
+					a.setBalance(a.getBalance() - amount);
+					System.out.println(
+							"Successfully withdrew $" + amount + " to account.  New balance is $" + a.getBalance());
+					log.info(new Transaction('t', a, a, a.getBalance() + amount, amount).toString());
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input");
+			}
+		}
+		return a.getBalance();
+	}
+
+	public double doTransfer(Account a) {
+		boolean valid = false;
+		while (!valid) {
+			try {
+				System.out.println("Please enter the amount you wish to deposit");
+				double amount = Double.parseDouble(cons.nextLine());
+				if (amount < 0.01) {
+					System.out.println("Cannot deposit less than one cent.");
+				} else {
+					a.setBalance(a.getBalance() + amount);
+					System.out.println(
+							"Successfully deposited $" + amount + " to account.  New balance is $" + a.getBalance());
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input");
+			}
+		}
+		return a.getBalance();
+	}
+
 	public Account createNewBankAccount(Customer c) {
+		if (Account.pendingAccounts.size() + Account.activeAccounts.size() > 1) {
+			boolean valid = false;
+			while (!valid) {
+				System.out.println("Would you like to create a single owner account or a joint account?");
+				System.out.println("Enter 1 for single account, enter 2 for joint account.");
+				try {
+					int choice = Integer.parseInt(cons.nextLine());
+					switch (choice) {
+					case 1:
+						valid = true;
+						System.out.println("Creating new bank account...");
+						return new Account(c);
+
+					case 2:
+						valid = true;
+						System.out.println("Creating new joint bank account...");
+						return createJointAccount(c);
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid selection");
+				}
+			}
+
+		}
 		return new Account(c);
 	}
 
-	public Account getAnAccount(User u) {
+	public Account findAnAccount(User u) {
 		for (int i = 0; i < Account.pendingAccounts.size(); i++) {
 			if (Account.pendingAccounts.get(i).getMember().getUsername().contentEquals(u.getUsername()))
 				return Account.pendingAccounts.get(i);
@@ -181,6 +283,14 @@ public class App {
 		for (int i = 0; i < Account.activeAccounts.size(); i++) {
 			if (Account.activeAccounts.get(i).getMember().getUsername().contentEquals(u.getUsername()))
 				return Account.activeAccounts.get(i);
+		}
+		return null;
+	}
+
+	public Customer findACustomer(String username) {
+		for (int i = 0; i < Customer.customerList.size(); i++) {
+			if (Customer.customerList.get(i).getUsername().equals(username))
+				return Customer.customerList.get(i);
 		}
 		return null;
 	}
@@ -197,8 +307,23 @@ public class App {
 		System.out.println("Producing new account pending approval...");
 	}
 
-	public void makeJointAccount() {
-
+	public JointAccount createJointAccount(Customer c1) {
+		Customer c2 = null;
+		int attemptsRemaining = 3;
+		while (attemptsRemaining > 0) {
+			System.out.println("Please enter the username of the second account holder (" + attemptsRemaining
+					+ " attempt(s) remaining)");
+			String user = cons.nextLine();
+			c2 = findACustomer(user);
+			if (c2 == null) {
+				System.out.println("Invalid username, please try again");
+				attemptsRemaining--;
+				continue;
+			}
+		}
+		if (c2 == null)
+			return null;
+		return new JointAccount(c1, c2);
 	}
 
 	public UserAccount createUserAccount(Customer c, String user, String password) {
@@ -248,7 +373,52 @@ public class App {
 
 	}
 
+	public Employee findAnEmployee(String username) {
+		for (int i = 0; i < UserAccount.userList.size(); i++) {
+			if (Employee.employeeList.get(i).getUsername().contains("admin"))
+				return Employee.employeeList.get(i);
+		}
+		return null;
+	}
+
+	public void createAdministratorAccount() {
+		while (true) {
+			String username = "";
+			while (!username.contains("admin")) {
+				System.out.println("Please enter a username (must contain admin somewhere in it");
+				username = cons.nextLine();
+			}
+			System.out.println("Please enter a password");
+			String password = cons.nextLine();
+			String check = "";
+			while (!check.equals(password)) {
+				System.out.println("Please confirm your password");
+				check = cons.nextLine();
+				if (!check.equals(password))
+					System.out.println("Mismatch, please re-enter.");
+			}
+			break;
+		}
+	}
+
+	public void showAdministratorMenu() {
+
+	}
+
 	public void doAdministratorLogin() {
+		Employee admin = null;
+		System.out.println("Checking for administrator accounts...");
+		admin = findAnEmployee("admin");
+		if (admin == null) {
+//			System.out.println("Found administrator account.");
+//			while(true) {
+//				System.out.println("Please enter your username.");
+//				String username = cons.nextLine();
+//				System.out.println("Please enter your password");
+//				showAdministratorMenu();
+//			}
+			System.out.println("No administrator accounts found.  Please create one.")
+		}
 
 	}
 }

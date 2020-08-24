@@ -9,7 +9,7 @@ public class JointAccount extends Account implements Serializable {
 	
 	public static ArrayList<JointAccount> activeJointAccounts = new ArrayList<JointAccount>();
 	
-	public JointAccount(Customer member1,Customer member2, int accountId) {
+	public JointAccount(Customer member1,Customer member2) {
 		super(member1);	//member1 is the primary account holder
 		this.member1 = member1;
 		this.member2 = member2;

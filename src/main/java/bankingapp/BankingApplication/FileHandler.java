@@ -39,4 +39,13 @@ public class FileHandler {
 	public boolean writeAccountFile() {
 		return false;
 	}
+	
+	public boolean checkFiles() {
+		if (!employeeFile.exists()) return false;
+		if (!userInfoFile.exists()) return false;
+		if (!accountFile.exists()) return false;
+		if (!customerFile.exists()) return false;
+		
+		return true;
+	}
 }

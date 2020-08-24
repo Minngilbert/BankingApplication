@@ -8,10 +8,12 @@ public class Employee extends User implements Serializable {
 	private String name;
 	private int employeeId;
 	private String username, password;
-
-	public Employee(String name, int string) {
+	private static int employeeIdGenerator = 0;
+	public static ArrayList<Employee> employeeList = new ArrayList<Employee>();
+	public Employee(String name) {
 		this.name = name;
-		this.employeeId = string;
+		employeeId=employeeIdGenerator++;
+		employeeList.add(this);
 	}
 
 	public String getName() {
