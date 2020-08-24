@@ -1,16 +1,21 @@
 package bankingapp.BankingApplication;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Customer implements AccountManipulator{
+public class Customer extends User implements AccountManipulator, Serializable {
+	
+	public static ArrayList<Customer> customerList = new ArrayList<Customer>();
 	
 	private String firstName, lastName, username, password;
+	private UserAccount userAccount;
 	
 	public Customer(String firstName, String lastName, String username, String password) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.username = username;
 		this.password = password;
+		customerList.add(this);
 	}
 	
 	public String getFirstName() {
@@ -83,7 +88,15 @@ public class Customer implements AccountManipulator{
 	}
 	
 	public void registerForAccount(int accountNumber) {
-		Account newCustomer = new Account(this, accountNumber);
+		Account newCustomer = new Account(this);
+	}
+	
+	public UserAccount getUserAccount() {
+		return userAccount;
+	}
+	
+	public void setUserAccount(UserAccount user) {
+		userAccount = user;
 	}
 	
 
@@ -107,4 +120,14 @@ public class Customer implements AccountManipulator{
 		return firstName + " " + lastName +" ";
 	}
 	
+	public String getPassword() {
+		return password;
+	}
+
+	@Override
+	public void setUsername(String user) {
+		this.username = user;
+		
+	}
+
 }

@@ -1,26 +1,27 @@
 package bankingapp.BankingApplication;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Account {
+public class Account implements Serializable {
 	
 	private Customer member;
 	private int accountId;
 	private double balance;
 	private boolean pendingApproval;
-	private static int accountGenerator;
+	private static int accountGenerator=0;
 	
-	static ArrayList<Account> activeAccounts = new ArrayList<Account>();
-	static ArrayList<Account> pendingAccounts = new ArrayList<Account>();
+	public static ArrayList<Account> activeAccounts = new ArrayList<Account>();
+	public static ArrayList<Account> pendingAccounts = new ArrayList<Account>();
 	
 
-	public Account(Customer owner, int accountId) {
+	public Account(Customer owner) {
 		this.member = owner;
-		this.accountId = accountId;
+		this.accountId = accountGenerator++;
 		this.balance = 0; //Start with a balance of zero
 		this.pendingApproval = true;
-		this.pendingAccounts.add(this);
-		accountGenerator++;
+		pendingAccounts.add(this);
+		
 	}
 	
 	public Account() {
@@ -51,6 +52,15 @@ public class Account {
 		return this.member;
 	}
 	
+	public void removePendingAccount(Account account) {
+		pendingAccounts.remove(account);
+	}
+	
+	public void promoteAccountToActive(Account account) {
+		pendingAccounts.remove(account);
+		activeAccounts.add(account);
+	}
+	
 	public ArrayList<Account> getPendingAccounts() {
 		return pendingAccounts;
 	}
@@ -61,7 +71,7 @@ public class Account {
 	
 	//adds to active accounts array
 	public void addActiveAccount(Account activeAccount) {
-		this.activeAccounts.add(activeAccount);
+		activeAccounts.add(activeAccount);
 	}
 	
 	public ArrayList<Account> getActiveAccounts() {

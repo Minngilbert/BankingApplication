@@ -1,6 +1,8 @@
 package bankingapp.BankingApplication;
 
-public class Administrator extends Employee{
+import java.io.Serializable;
+
+public class Administrator extends Employee implements Serializable {
 	private String name;
 	private int employeeId;
 	

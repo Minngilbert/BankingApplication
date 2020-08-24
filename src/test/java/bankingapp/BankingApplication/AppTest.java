@@ -5,12 +5,12 @@ import org.junit.jupiter.api.Test;
 
 class AppTest {
 
-	Customer c = new Customer("Test","Name");
-	Customer c2 = new Customer("Test","Name2");
-	Account a = new Account(1,255.0,true);
+	Customer c = new Customer("Test","Name", "user", "pass");
+	Customer c2 = new Customer("Test","Name2", "user2", "pass");
+	Account a = new Account(c,123);
 	Employee e = new Employee("TestEm", 123);
 	Administrator ad = new Administrator("TestAdm", 1234);
-	Transaction t = new Transaction();
+	Transaction t = new Transaction('w',a, a, 100.0, 12.0);
 	
 
 	private void doDeposit() {
