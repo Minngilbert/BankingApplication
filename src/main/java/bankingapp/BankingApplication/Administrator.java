@@ -7,7 +7,7 @@ public class Administrator extends Employee implements Serializable {
 	private int employeeId;
 	
 	public Administrator(String name, int employeeId) {
-		super(name, employeeId);
+		super(name);
 		
 	}
 
