@@ -474,7 +474,7 @@ public class App {
 							break;
 						}
 						if(verifyEmployee(user)) {
-							showAllAccounts(user,a);
+//							showAllAccounts(user,a);
 							break;
 						}
 						System.out.println("Invalid Selection");
