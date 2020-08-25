@@ -213,6 +213,8 @@ public class App {
 		}
 		return a.getBalance();
 	}
+	
+	
 
 	// withdraw an amount from an account
 	public double doWithdrawal(Account a) {
@@ -337,7 +339,6 @@ public class App {
 			if (c2 == null) {
 				System.out.println("Invalid username, please try again");
 				attemptsRemaining--;
-				continue;
 			}
 		}
 		if (c2 == null)
@@ -547,4 +548,131 @@ public class App {
 	public boolean verifyEmployee(User user) {
 		return user.getClass().equals(Employee.class);
 	}
+	
+	/* 
+	 * ***********************************************
+	 * 	All Code below this is for testing purposes***
+	 * ***********************************************
+	 */
+	
+	 /*
+	  *  This method is for testing 
+	 * 	Adding 400 dollars to a customer Account
+	 */
+	public double TestdoDeposit(Account a) {
+		boolean valid = false;
+		while (!valid) {
+			try {
+				System.out.println("Please enter the amount you wish to deposit");
+				double amount = 400;
+				if (amount < 0.01) {
+					System.out.println("Cannot deposit less than one cent.");
+				} else {
+					a.setBalance(a.getBalance() + amount);
+					valid = true;
+					System.out.println(
+							"Successfully deposited $" + amount + " to account.  New balance is $" + a.getBalance());
+					
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input");
+			}
+		}
+		return a.getBalance();
+	}
+	
+	// withdraw an 1 from account
+	public double TestdoWithdrawal(Account a) {
+		boolean valid = false;
+		while (!valid) {
+			try {
+				System.out.println("Please enter the amount you wish to withdraw");
+				double amount = 1.00;
+				if (amount < 0.01) {
+					System.out.println("Cannot withdraw less than one cent.");
+				} else if (amount > a.getBalance()) {
+					System.out.println("Cannot overdraw an account.");
+				} else {
+					valid = true;
+					a.setBalance(a.getBalance() - amount);
+					System.out.println(
+							"Successfully withdrew $" + amount + " to account.  New balance is $" + a.getBalance());
+					log.info(new Transaction('t', a, a, a.getBalance() + amount, amount).toString());
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input");
+			}
+		}
+		return a.getBalance();
+	}
+	
+	// transfer balances between accounts
+		public double TestdoTransfer(Account a) {
+			boolean valid = false;
+			while (!valid) {
+				try {
+					System.out.println("Please enter the amount you wish to deposit");
+					double amount = 5;
+					if (amount < 0.01) {
+						System.out.println("Cannot deposit less than one cent.");
+					} else {
+						a.setBalance(a.getBalance() + amount);
+						System.out.println(
+								"Successfully deposited $" + amount + " to account.  New balance is $" + a.getBalance());
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid input");
+				}
+			}
+			return a.getBalance();
+		}
+	
+	public Account testcreateNewBankAccount(Customer c, int choice) {
+		if (Account.pendingAccounts.size() + Account.activeAccounts.size() > 1) {
+			boolean valid = false;
+			while (!valid) {
+				System.out.println("Would you like to create a single owner account or a joint account?");
+				System.out.println("Enter 1 for single account, enter 2 for joint account.");
+				try {
+
+					switch (choice) {
+					case 1:
+						valid = true;
+						System.out.println("Creating new bank account...");
+						return new Account(c);
+
+					case 2:
+						valid = true;
+						System.out.println("Creating new joint bank account...");
+						return TestcreateJointAccount(c);
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid selection");
+				}
+			}
+
+		}
+		return new Account(c);
+	}
+	
+	// create a new customer joint account
+	public JointAccount TestcreateJointAccount(Customer c1) {
+		Customer c2 = null;
+		int attemptsRemaining = 3;
+		while (attemptsRemaining > 0) {
+			System.out.println("Please enter the username of the second account holder (" + attemptsRemaining
+					+ " attempt(s) remaining)");
+			String user = "user3";
+			c2 = findACustomer(user);
+			attemptsRemaining = 0;
+			if (c2 == null) {
+				System.out.println("Invalid username, please try again");
+				attemptsRemaining--;
+			}
+		}
+		if (c2 == null)
+			return null;
+		return new JointAccount(c1, c2);
+	}
+
 }
