@@ -129,6 +129,10 @@ public class Customer extends User implements AccountManipulator, Serializable {
 		return password;
 	}
 
+	public void setPassword(String pass) {
+		this.password = pass;
+	}
+	
 	@Override
 	public void setUsername(String user) {
 		this.username = user;

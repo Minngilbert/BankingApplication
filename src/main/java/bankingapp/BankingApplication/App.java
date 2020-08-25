@@ -13,6 +13,7 @@ public class App {
 	private Scanner cons = new Scanner(System.in);
 	private Logger log = LogManager.getLogger(App.class);
 	FileHandler files = new FileHandler();
+	User currentUser;
 
 	public static void main(String[] args) {
 		/*
@@ -57,8 +58,7 @@ public class App {
 			try {
 				System.out.println("Enter 1 to sign in as a customer.");
 				System.out.println("Enter 2 to sign in as an employee.");
-				System.out.println("Enter 3 to sign in as an administrator.");
-				System.out.println("Enter 4 to exit");
+				System.out.println("Enter 3 to exit");
 				choice = cons.nextInt();
 				if (choice < 1 || choice > 4)
 					throw new NumberFormatException();
@@ -70,9 +70,6 @@ public class App {
 					doEmployeeLogin();
 					break;
 				case 3:
-					doAdministratorLogin();
-					break;
-				case 4:
 					done = true;
 					System.out.println("Thank you for using this banking software.");
 				}
@@ -81,7 +78,6 @@ public class App {
 			}
 		}
 		files.writeCustomerFile();
-
 
 	}
 
@@ -392,10 +388,6 @@ public class App {
 		return credentials;
 	}
 
-	public void doEmployeeLogin() {
-
-	}
-
 	// find an employee or administrator
 	public Employee findAnEmployee(String username) {
 		if (Employee.employeeList.isEmpty())
@@ -408,13 +400,20 @@ public class App {
 		return null;
 	}
 
-	public boolean checkForAnyAdministrator() {
+	public boolean checkForAnyEmployee() {
 		if (Employee.employeeList.isEmpty())
 			return false;
+		else
+			return true;
+	}
 
-		for (int i = 0; i < UserAccount.userList.size(); i++) {
-			if (Employee.employeeList.get(i).getUsername().contains("admin"))
-				return true;
+	public boolean checkForAnyAdministrator() {
+
+		if (checkForAnyEmployee()) {
+			for (int i = 0; i < UserAccount.userList.size(); i++) {
+				if (Employee.employeeList.get(i).getUsername().contains("admin"))
+					return true;
+			}
 		}
 		return false;
 
@@ -422,20 +421,43 @@ public class App {
 
 	public void createAdministratorAccount() {
 		while (true) {
-			String username = "";
+			String fname = "", lname = "", username = "", password = "";
+			while (fname.equals("") || lname.equals("")) {
+				System.out.println("Please enter the administrator's first name");
+				fname = cons.nextLine();
+				if (fname.equals("") || fname.matches("[0-9]")) {
+					System.out.println("Invalid name, must contain no numbers");
+					fname = "";
+					continue;
+				}
+				System.out.println("Please enter the administrator's last name");
+				lname = cons.nextLine();
+				if (lname.equals("") || lname.matches("[0-9]")) {
+					System.out.println("Invalid name, must contain no numbers");
+					fname = "";
+					lname = "";
+					continue;
+				}
+			}
 			while (!username.contains("admin")) {
 				System.out.println("Please enter a username (must contain admin somewhere in it");
 				username = cons.nextLine();
 			}
-			System.out.println("Please enter a password");
-			String password = cons.nextLine();
+			while (password.length() == 0) {
+				System.out.println("Please enter a password");
+				password = cons.nextLine();
+				if (password.length() == 0)
+					System.out.println("Password must be 1 or more characters long");
+			}
 			String check = "";
-			while (!check.equals(password)) {
+			while (!check.equals(password) || password.length() == 0) {
 				System.out.println("Please confirm your password");
 				check = cons.nextLine();
 				if (!check.equals(password))
 					System.out.println("Mismatch, please re-enter.");
 			}
+			Administrator a = new Administrator(fname, lname, username, password);
+
 			break;
 		}
 	}
@@ -445,7 +467,7 @@ public class App {
 	}
 
 	public void showAccountActionMenu(User user, Account a) {
-		if (a == null) { // came from customer menu as admin
+		if (a == null) { // came from customer menu as admin or employee
 			System.out.println("Please choose an account to act on");
 		}
 		if (a.isPendingApproval() && user.getClass().equals(Customer.class))
@@ -471,50 +493,50 @@ public class App {
 					char choice = cons.nextLine().toLowerCase().charAt(0);
 					switch (choice) {
 					case 'v':
-						if(verifyAdministrator(user)) {
-							doAdminAccountView(user,a);
+						if (verifyAdministrator(user)) {
+							doAdminAccountView(user, a);
 							break;
 						}
-						if(verifyEmployee(user)) {
-							showAllAccounts(user,a);
+						if (verifyEmployee(user)) {
+							showAllAccounts(user, a);
 							break;
 						}
 						System.out.println("Invalid Selection");
 						break;
 					case 'c':
-						if(verifyAdministrator(user)) {
+						if (verifyAdministrator(user)) {
 							doAdminCancel(user);
 							break;
 						}
 						System.out.println("Invalid Selection");
 						break;
 					case 'a':
-						if(!verifyEmployee(user)) {
+						if (!verifyEmployee(user)) {
 							viewPendingAccounts(user);
 							break;
 						}
 						System.out.println("Invalid Selection");
 						break;
 					case 'd':
-						if(!verifyEmployee(user)) {
+						if (!verifyEmployee(user)) {
 							doDeposit(a);
 							break;
 						}
 						System.out.println("Invalid Selection");
 						break;
 					case 'w':
-						if(!verifyEmployee(user)) {
+						if (!verifyEmployee(user)) {
 							doWithdrawal(a);
 							break;
 						}
 						System.out.println("Invalid Selection");
 						break;
 					case 't':
-						if(!verifyEmployee(user))
+						if (!verifyEmployee(user))
 							doWithdrawal(a);
 						System.out.println("Invalid Selection");
 						break;
-					case 'q' :
+					case 'q':
 						isDone = true;
 						break;
 					default:
@@ -528,55 +550,143 @@ public class App {
 	}
 
 	private void viewPendingAccounts(User user) {
-		// TODO Auto-generated method stub
-		
+		if (user == null || !verifyAdministrator(user) || !verifyEmployee(user)) {
+			System.out.println("Invalid user credentials.  How'd you get here?");
+			return;
+		}
+
 	}
 
 	private void doAdminCancel(User user) {
-		// TODO Auto-generated method stub
-		
+		if (user == null || !verifyAdministrator(user)) {
+			System.out.println("Invalid user credentials.  How'd you get here?");
+			return;
+		}
+
 	}
 
 	private void showAllAccounts(User user, Account a) {
-		// TODO Auto-generated method stub
-		
+		if (user == null || !verifyAdministrator(user) || !verifyEmployee(user)) {
+			System.out.println("Invalid user credentials.  How'd you get here?");
+			return;
+		}
 	}
 
 	private void doAdminAccountView(User user, Account a) {
-		// TODO Auto-generated method stub
-		
+		if (user == null || !verifyAdministrator(user)) {
+			System.out.println("Invalid user credentials.  How'd you get here?");
+			return;
+		}
 	}
 
-	public void doAdministratorLogin() {
-		Employee admin = null;
-		System.out.println("Checking for administrator accounts...");
+	public void doEmployeeLogin() {
+		Employee emp = null;
+		System.out.println("Checking employee accounts...");
+		// admin = findAnEmployee("admin");
+		if (checkForAnyEmployee()) {
+			System.out.println("Found administrator account.");
+			while (true) {
+				System.out.println("Enter 1 to login as employee, enter 2 to login as administrator");
+				int choice = 0;
+				try {
+					while (choice != 1 || choice != 2) {
+						choice = cons.nextInt();
+
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid selection");
+				}
+				System.out.println("Please enter your username.");
+				String username = cons.nextLine();
+				if (!username.contains("admin") || !username.equals(emp.getUsername())) {
+					System.out.println(
+							"Invalid username, please enter a valid admin account (must containt the word admin in it)");
+					continue;
+				}
+				System.out.println("Username accepted.");
+				int count = 3;
+				boolean valid = false;
+				while (count > 0) {
+					System.out.println("Please enter your password");
+					String password = cons.nextLine();
+					if (password.equals(emp.getPassword())) {
+						valid = true;
+						break;
+					}
+					System.out.println("Invalid password, please re-enter (" + count + " attempt(s) remaining)");
+					count--;
+				}
+				if (valid)
+					showAccountActionMenu(emp, null);
+				else {
+					System.out.println("Failed to log in.  Returning to menu...");
+					return;
+				}
+			}
+		}
+		System.out.println("No administrator accounts found.  Please create one.");
+		createAdministratorAccount();
+	}
+
+	// used to log in as administrator
+	public void doAdminLogin() {
+		Employee emp = null;
+		System.out.println("Checking employee accounts...");
 		// admin = findAnEmployee("admin");
 		if (checkForAnyAdministrator()) {
 			System.out.println("Found administrator account.");
 			while (true) {
+				System.out.println("Enter 1 to login as employee, enter 2 to login as administrator");
+				int choice = 0;
+				try {
+					while (choice != 1 || choice != 2) {
+						choice = cons.nextInt();
+
+					}
+				} catch (NumberFormatException e) {
+					System.out.println("Invalid selection");
+				}
 				System.out.println("Please enter your username.");
 				String username = cons.nextLine();
-				if (!username.contains("admin")) {
+				if (!username.contains("admin") || !username.equals(emp.getUsername())) {
 					System.out.println(
 							"Invalid username, please enter a valid admin account (must containt the word admin in it)");
+					continue;
 				}
-				System.out.println("Please enter your password");
-				showAccountActionMenu(admin, null);
+				System.out.println("Username accepted.");
+				int count = 3;
+				boolean valid = false;
+				while (count > 0) {
+					System.out.println("Please enter your password");
+					String password = cons.nextLine();
+					if (password.equals(emp.getPassword())) {
+						valid = true;
+						break;
+					}
+					System.out.println("Invalid password, please re-enter (" + count + " attempt(s) remaining)");
+					count--;
+				}
+				if (valid)
+					showAccountActionMenu(emp, null);
+				else {
+					System.out.println("Failed to log in.  Returning to menu...");
+					return;
+				}
 			}
 		}
 		System.out.println("No administrator accounts found.  Please create one.");
-
+		createAdministratorAccount();
 	}
-	
-	//helper methods to shorten some checks
+
+	// helper methods to shorten some checks
 	public boolean verifyCustomer(User user) {
 		return user.getClass().equals(Customer.class);
 	}
-	
+
 	public boolean verifyAdministrator(User user) {
 		return user.getClass().equals(Administrator.class);
 	}
-	
+
 	public boolean verifyEmployee(User user) {
 		return user.getClass().equals(Employee.class);
 	}

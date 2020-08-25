@@ -9,19 +9,22 @@ public class Employee extends User implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private String name;
+	private String firstname, lastname;
 	private int employeeId;
 	private String username, password;
 	private static int employeeIdGenerator = 0;
 	public static ArrayList<Employee> employeeList = new ArrayList<Employee>();
-	public Employee(String name) {
-		this.name = name;
+	public Employee(String firstname, String lastname, String user, String pass) {
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.username = user;
+		this.password = pass;
 		employeeId=employeeIdGenerator++;
 		employeeList.add(this);
 	}
 
 	public String getName() {
-		return name;
+		return firstname + " " + lastname;
 	}
 
 	public int getEmployeeId() {
@@ -119,5 +122,11 @@ public class Employee extends User implements Serializable {
 	@Override
 	public void setUsername(String user) {
 		username = user;
+	}
+
+	@Override
+	public void setPassword(String pass) {
+		password = pass;
+		
 	}
 }

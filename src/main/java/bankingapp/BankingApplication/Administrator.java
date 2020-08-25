@@ -9,10 +9,9 @@ public class Administrator extends Employee implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
 	private int employeeId;
-	
-	public Administrator(String name, int employeeId) {
-		super(name);
-		
+
+	public Administrator(String firstname, String lastname, String username, String pass) {
+		super(firstname,lastname,username,pass);
 	}
 
 	public String getName() {
