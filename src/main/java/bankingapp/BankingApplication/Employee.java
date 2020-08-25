@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 public class Employee extends User implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name;
 	private int employeeId;
 	private String username, password;

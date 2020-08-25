@@ -5,6 +5,10 @@ import java.util.ArrayList;
 
 public class Account implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Customer member;
 	private int accountId;
 	private double balance;
@@ -34,6 +38,8 @@ public class Account implements Serializable {
 
 	public void setPendingApproval(boolean pendingApproval) {
 		this.pendingApproval = pendingApproval;
+		if(pendingApproval == false)
+			promoteAccountToActive(this);
 	}
 
 	public int getAccountId() {

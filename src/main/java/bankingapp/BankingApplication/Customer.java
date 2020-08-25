@@ -5,6 +5,11 @@ import java.util.ArrayList;
 
 public class Customer extends User implements AccountManipulator, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static ArrayList<Customer> customerList = new ArrayList<Customer>();
 	
 	private String firstName, lastName, username, password;

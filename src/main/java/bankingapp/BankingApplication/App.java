@@ -40,8 +40,8 @@ public class App {
 	public void startUp() {
 		System.out.println("Welcome to the Bank of The Town With No Name\n");
 
-		if (!files.checkFiles()) {
-			System.out.println("No data found, please create an administrator account.");
+		if (!files.checkForAdminAccounts()) {
+			System.out.println("No administrator data found, please create an administrator account.");
 			createAdministratorAccount();
 		}
 
@@ -80,7 +80,9 @@ public class App {
 				System.out.println("Invalid selection");
 			}
 		}
-		System.exit(0);
+		files.writeCustomerFile();
+
+
 	}
 
 	// validate customer credentials for login
@@ -155,7 +157,7 @@ public class App {
 				System.out.println("Account creation failed.");
 			}
 		}
-		showCustomerAccountActions(c, a);
+		showAccountActionMenu(c, a);
 	}
 
 	// shows a list of available actions for a customer account
@@ -355,9 +357,9 @@ public class App {
 		String[] credentials = new String[4];
 		boolean choiceValid = false;
 		while (!choiceValid) {
-			System.out.println("Please enter the First Name of the primary account holder");
+			System.out.println("Please enter the First Name of account holder");
 			credentials[0] = cons.nextLine();
-			System.out.println("Please enter the Last Name of the primary account holder");
+			System.out.println("Please enter the Last Name of account holder");
 			credentials[1] = cons.nextLine();
 			if (credentials[0].contains("[^a-zA-Z]") || credentials[0].isEmpty() || credentials[1].isEmpty()
 					|| credentials[1].contains("[^a-zA-Z]")) {
@@ -400,7 +402,7 @@ public class App {
 			return null;
 
 		for (int i = 0; i < UserAccount.userList.size(); i++) {
-			if (Employee.employeeList.get(i).getUsername().contains("admin"))
+			if (Employee.employeeList.get(i).getUsername().equals(username))
 				return Employee.employeeList.get(i);
 		}
 		return null;
@@ -470,11 +472,11 @@ public class App {
 					switch (choice) {
 					case 'v':
 						if(verifyAdministrator(user)) {
-//							doAdminAccountView(user,a);
+							doAdminAccountView(user,a);
 							break;
 						}
 						if(verifyEmployee(user)) {
-//							showAllAccounts(user,a);
+							showAllAccounts(user,a);
 							break;
 						}
 						System.out.println("Invalid Selection");
@@ -487,23 +489,34 @@ public class App {
 						System.out.println("Invalid Selection");
 						break;
 					case 'a':
-						if(verifyAdministrator(user) || verifyEmployee(user)) {
+						if(!verifyEmployee(user)) {
 							viewPendingAccounts(user);
 							break;
 						}
 						System.out.println("Invalid Selection");
 						break;
 					case 'd':
-						doDeposit(a);
+						if(!verifyEmployee(user)) {
+							doDeposit(a);
+							break;
+						}
+						System.out.println("Invalid Selection");
 						break;
 					case 'w':
-						doWithdrawal(a);
+						if(!verifyEmployee(user)) {
+							doWithdrawal(a);
+							break;
+						}
+						System.out.println("Invalid Selection");
 						break;
 					case 't':
-						doTransfer(a);
+						if(!verifyEmployee(user))
+							doWithdrawal(a);
+						System.out.println("Invalid Selection");
 						break;
 					case 'q' :
 						isDone = true;
+						break;
 					default:
 						System.out.println("Invalid selection.");
 					}
@@ -512,6 +525,26 @@ public class App {
 				}
 			}
 		}
+	}
+
+	private void viewPendingAccounts(User user) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void doAdminCancel(User user) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void showAllAccounts(User user, Account a) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void doAdminAccountView(User user, Account a) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public void doAdministratorLogin() {
