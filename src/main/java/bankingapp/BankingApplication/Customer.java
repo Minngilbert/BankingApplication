@@ -3,7 +3,7 @@ package bankingapp.BankingApplication;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Customer extends User implements AccountManipulator, Serializable {
+public class Customer extends User implements Serializable {
 	
 	/**
 	 * 
