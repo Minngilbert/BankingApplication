@@ -14,9 +14,10 @@ class AppTest {
 	Account a2 = new Account(c2);
 	
 	
-	Employee e = new Employee("TestEm");
-	Administrator ad = new Administrator("TestAdm", 1234);
-	Transaction t = new Transaction('w',a, a, 100.0, 12.0);
+	Employee e = new Employee("Gilbert", "Mwangi", "em1", "password");
+	Administrator ad = new Administrator("Robert", "Curley","admin", "password");
+	
+	//Transaction t = new Transaction('w',a, a, 100.0, 12.0);
 	App ap = new App();
 	
 	
@@ -44,13 +45,10 @@ class AppTest {
 		Assertions.assertEquals(399.0, ap.TestdoWithdrawal(a));
 	}
 	
-	/*
-	 *	This test is disabled since I dont understand how 
-	 *	the doTransfer function works
-	 */
+
 	@Disabled
 	void TestdoTransfer() {
-		
+		ap.testdoTransfer(a);
 	}
 
 	@Test
@@ -85,8 +83,8 @@ class AppTest {
 	 
 	@Test
 	void TestCreateNewJointAccountPendingArray() {
-		Account jtc = ap.TestcreateJointAccount(c3);
-		Assertions.assertEquals(3,jtc.getPendingAccounts().size());
+		JointAccount jtc = ap.TestcreateJointAccount(c3);
+		Assertions.assertEquals(1,jtc.getPendingAccounts().size());
 	}
 	
 	@Test
@@ -102,13 +100,43 @@ class AppTest {
 	
 	@Test
 	void testFindAnEmployee() {
-		Employee e2 = new Employee("TestEm2");
-		Assertions.assertEquals(e2, ap.findAnEmployee("TestE2m"));
+		Employee e2 = new Employee("Peter", "Nold", "EmUser", "password");
+		Assertions.assertEquals(e2, ap.findAnEmployee("EmUser"));
 	}
 	
 	@Test
-	void testCheckdAdministrator() {
-		Assertions.assertEquals(true, ap.checkForAnyAdministrator());
+	void checkForAnyAdministrator() {
+		Assertions.assertEquals(true,ap.checkForAnyAdministrator());
+	}
+	
+	@Test
+	void testVerifyAdministrator() {
+		Assertions.assertEquals(true, ap.verifyAdministrator(ad));
+	}
+	
+	@Test
+	void testverifyEmployee() {
+		Assertions.assertEquals(true, ap.verifyEmployee(e));
+	}
+	
+	@Test
+	void testverifyCustomer() {
+		Assertions.assertEquals(true, ap.verifyCustomer(c));
+	}
+
+	@Test
+	void testVerifyAdministratorf() {
+		Assertions.assertEquals(false, ap.verifyAdministrator(e));
+	}
+	
+	@Test
+	void testverifyEmployeef() {
+		Assertions.assertEquals(false, ap.verifyEmployee(c));
+	}
+	
+	@Test
+	void testverifyCustomefr() {
+		Assertions.assertEquals(false, ap.verifyCustomer(ad));
 	}
 
 }

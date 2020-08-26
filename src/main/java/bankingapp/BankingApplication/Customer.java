@@ -5,10 +5,15 @@ import java.util.ArrayList;
 
 public class Customer extends User implements AccountManipulator, Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public static ArrayList<Customer> customerList = new ArrayList<Customer>();
 	
 	private String firstName, lastName, username, password;
-	private UserAccount userAccount;
+
 	
 	public Customer(String firstName, String lastName, String username, String password) {
 		this.firstName = firstName;
@@ -91,15 +96,6 @@ public class Customer extends User implements AccountManipulator, Serializable {
 		Account newCustomer = new Account(this);
 	}
 	
-	public UserAccount getUserAccount() {
-		return userAccount;
-	}
-	
-	public void setUserAccount(UserAccount user) {
-		userAccount = user;
-	}
-	
-
 	public Account getCustomerAccount() {
 		Account acc = new Account();
 		
@@ -124,6 +120,10 @@ public class Customer extends User implements AccountManipulator, Serializable {
 		return password;
 	}
 
+	public void setPassword(String pass) {
+		this.password = pass;
+	}
+	
 	@Override
 	public void setUsername(String user) {
 		this.username = user;

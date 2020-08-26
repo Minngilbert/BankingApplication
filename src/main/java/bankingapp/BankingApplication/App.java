@@ -544,13 +544,11 @@ public class App {
 	 ****************************************************** 
 	 */
 
+	//Give admin 
 	public void doAdminAccountView(User user,Account a) {
 		
 	}
-	
-	public void showAdministratorMenu() {
 
-	}
 	
 	/*
 	 * Assuming User u has the account that
@@ -698,25 +696,48 @@ public class App {
 	}
 	
 	// transfer balances between accounts
-		public double TestdoTransfer(Account a) {
-			boolean valid = false;
-			while (!valid) {
-				try {
-					System.out.println("Please enter the amount you wish to deposit");
-					double amount = 5;
-					if (amount < 0.01) {
-						System.out.println("Cannot deposit less than one cent.");
-					} else {
-						a.setBalance(a.getBalance() + amount);
-						System.out.println(
-								"Successfully deposited $" + amount + " to account.  New balance is $" + a.getBalance());
+	public double testdoTransfer(Account a) {
+		boolean valid = false;
+		while (!valid) {
+			try {
+				
+					System.out.println("Please enter the username of the account you wish to deposit to");
+					String username = cons.nextLine();
+					
+					if(username != "") {
+						System.out.println("Please enter a valid username");
+						continue;
 					}
-				} catch (NumberFormatException e) {
-					System.out.println("Invalid input");
-				}
+					
+					Customer c = findACustomer(username);
+					
+					if(c != null) {
+						Account ac = findAnAccount(c);
+						System.out.println("Please enter the amount you wish to transfer");
+						double amount = Double.parseDouble(cons.nextLine());
+						
+						if (amount < 0.01) {
+							System.out.println("Cannot deposit less than one cent.");
+						} else {
+							ac.setBalance(ac.getBalance() + amount);
+							a.setBalance(a.getBalance() - amount);
+							System.out.println(
+									"Successfully transfered $" + amount + " to "+ username);
+							valid = true;
+						}
+						
+					}
+					else {
+						System.out.println("Please enter a valid username");
+						continue;
+					}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid input");
 			}
-			return a.getBalance();
 		}
+		return a.getBalance();
+	}
+	
 	
 	public Account testcreateNewBankAccount(Customer c, int choice) {
 		if (Account.pendingAccounts.size() + Account.activeAccounts.size() > 1) {

@@ -6,5 +6,6 @@ public abstract class User {
 	public abstract String getUsername();
 	public abstract String getPassword();
 	public abstract void setUsername(String user);
+	public abstract void setPassword(String pass);
 	//public abstract void setPassword(String pass);
 }
