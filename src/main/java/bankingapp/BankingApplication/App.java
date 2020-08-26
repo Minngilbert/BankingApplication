@@ -241,20 +241,46 @@ public class App {
 		return a.getBalance();
 	}
 
-	// transfer balances between accounts
+	/*
+	 * **********************************
+	 * Add to main branch of the repo****
+	 * **********************************
+	 */
 	public double doTransfer(Account a) {
 		boolean valid = false;
 		while (!valid) {
 			try {
-				System.out.println("Please enter the amount you wish to deposit");
-				double amount = Double.parseDouble(cons.nextLine());
-				if (amount < 0.01) {
-					System.out.println("Cannot deposit less than one cent.");
-				} else {
-					a.setBalance(a.getBalance() + amount);
-					System.out.println(
-							"Successfully deposited $" + amount + " to account.  New balance is $" + a.getBalance());
-				}
+				
+					System.out.println("Please enter the username of the account you wish to deposit to");
+					String username = cons.nextLine();
+					
+					if(username != "") {
+						System.out.println("Please enter a valid username");
+						continue;
+					}
+					
+					Customer c = findACustomer(username);
+					
+					if(c != null) {
+						Account ac = findAnAccount(c);
+						System.out.println("Please enter the amount you wish to transfer");
+						double amount = Double.parseDouble(cons.nextLine());
+						
+						if (amount < 0.01) {
+							System.out.println("Cannot deposit less than one cent.");
+						} else {
+							ac.setBalance(ac.getBalance() + amount);
+							a.setBalance(a.getBalance() - amount);
+							System.out.println(
+									"Successfully transfered $" + amount + " to "+ username);
+							valid = true;
+						}
+						
+					}
+					else {
+						System.out.println("Please enter a valid username");
+						continue;
+					}
 			} catch (NumberFormatException e) {
 				System.out.println("Invalid input");
 			}
@@ -439,9 +465,6 @@ public class App {
 		}
 	}
 
-	public void showAdministratorMenu() {
-
-	}
 
 	public void showAccountActionMenu(User user, Account a) {
 		if (a == null) { // came from customer menu as admin
@@ -514,7 +537,75 @@ public class App {
 			}
 		}
 	}
+	
+	/*
+	 ******************************************************
+	 ************add methods to master rep*****************
+	 ****************************************************** 
+	 */
 
+	public void doAdminAccountView(User user,Account a) {
+		
+	}
+	
+	public void showAdministratorMenu() {
+
+	}
+	
+	/*
+	 * Assuming User u has the account that
+	 * will be canceled 
+	 */
+	public boolean doAdminCancel(User u) {
+		int attemptsRemaining = 3;
+		Administrator adm =(Administrator) u;
+		
+		while(attemptsRemaining >0) {
+				System.out.println("Please enter the username of the account you wish to cancel " 
+						+ attemptsRemaining + " attempt(s) remaining)");
+				String username = cons.nextLine();
+				if(username == "") {
+					System.out.println("Not a valid input");
+					attemptsRemaining--;
+					continue;
+				}
+				Customer c = findACustomer(username);
+				if(c == null) {
+					System.out.println("No customer with username "+username);
+					attemptsRemaining--;
+					continue;
+				}
+				else {
+					Account a = findAnAccount(c);
+					adm.cancelAccount(a);
+					return true;
+				}
+			}
+		
+		return false;
+	}
+	
+	public void viewPendingAccounts() {
+		Account ac = null;
+		for(Account a: ac.getActiveAccounts()) {
+			System.out.println(a.toString());
+		}
+	}
+
+	public void showAllAccounts() {
+		Account ac = null;
+		for(Account a: ac.getActiveAccounts()) {
+			System.out.println("Active: "+ a.toString());
+		}
+		for(Account a: ac.getPendingAccounts()) {
+			System.out.println("Pending: "+a.toString());
+		}	
+	}
+	/*
+	 * ******************************************************
+	 * ***end of methods that need to be in the master repo**
+	 * ******************************************************
+	 */
 	public void doAdministratorLogin() {
 		Employee admin = null;
 		System.out.println("Checking for administrator accounts...");
