@@ -43,21 +43,11 @@ public class App {
 	public void startUp() {
 		System.out.println("Welcome to the Bank of The Town With No Name\n");
 
+		Customer.customerList.clear();
+		Employee.employeeList.clear();
+
 		if (!files.checkForAdminAccounts()) {
 			System.out.println("No administrator data found, please create an administrator account.");
-			if (Employee.employeeList.size() <= 2) {
-				placeHolderAdmin = new Administrator("John", "Doe", "Invalid", "");
-				placeHolderEmployee = new Employee("Jane", "Doe", "Invalid", "");
-			} else {
-				placeHolderAdmin = (Administrator) Employee.employeeList.get(0);
-				placeHolderEmployee = Employee.employeeList.get(1);
-				
-			}
-			if (Customer.customerList.size() < 2) {
-				placeHolderCustomer = new Customer("John", "Doe", "Invalid", "");
-			} else {
-				placeHolderCustomer = Customer.customerList.get(1);
-			}
 			createAdministratorAccount();
 		}
 
@@ -65,6 +55,9 @@ public class App {
 			System.out.println("Couldn't read account file.");
 		if (!files.readCustomerFile())
 			System.out.println("Couldn't read customer file.");
+		if (!files.readEmployeeFile()) {
+			System.out.println("Couldn't read employee file.");
+		}
 		showMainMenu();
 	}
 
@@ -76,7 +69,7 @@ public class App {
 		while (!done) {
 			try {
 				System.out.println("Enter 1 to sign in as a customer.");
-				System.out.println("Enter 2 to sign in as an employee.");
+				System.out.println("Enter 2 to do employee actions.");
 				System.out.println("Enter 3 to exit");
 				choice = Integer.parseInt(cons.nextLine());
 				if (choice < 1 || choice > 3)
@@ -86,7 +79,7 @@ public class App {
 					doCustomerLogin();
 					break;
 				case 2:
-					doEmployeeLogin();
+					showEmployeeActions();
 					break;
 				case 3:
 					done = true;
@@ -99,6 +92,89 @@ public class App {
 		files.writeCustomerFile();
 		files.writeEmployeeFile();
 		files.writeAccountFile();
+	}
+
+	public void showEmployeeActions() {
+		System.out.println("Please select from one of the following options:");
+		boolean done = false;
+		int choice = 0;
+		while (!done) {
+			try {
+				System.out.println("Enter 1 to sign in as an employee.");
+				System.out.println("Enter 2 to sign in as an administrator.");
+				System.out.println("Enter 3 to create a new employee account");
+				System.out.println("Enter 4 to create a new administrator account");
+				System.out.println("Enter 5 to go back to the main menu");
+				choice = Integer.parseInt(cons.nextLine());
+				if (choice < 1 || choice > 5)
+					throw new NumberFormatException();
+				switch (choice) {
+				case 1:
+					doEmployeeLogin();
+					break;
+				case 2:
+					doAdminLogin();
+					break;
+				case 3:
+					if (verifyAdminAuthorization())
+						createEmployeeAccount();
+					else {
+						System.out.println("Couldn't successfully authorize administrator account.");
+					}
+					break;
+				case 4:
+					if (verifyAdminAuthorization())
+						createAdministratorAccount();
+					else {
+						System.out.println("Couldn't successfully authorize administrator account.");
+					}
+
+					break;
+				case 5:
+					done = true;
+					System.out.println("Going back to main menu.");
+				}
+			} catch (NumberFormatException e) {
+				System.out.println("Invalid selection");
+			}
+		}
+		files.writeCustomerFile();
+		files.writeEmployeeFile();
+		files.writeAccountFile();
+	}
+
+	// verifies an admin's ok to create an employee or administrator account
+	public boolean verifyAdminAuthorization() {
+		while (true) {
+			System.out.println("Please enter administrator username.");
+			String username = cons.nextLine();
+			Administrator a = (Administrator) findAnEmployee(username);
+			if (!username.contains("admin") || !username.equals(a.getUsername()) || a == null) {
+				System.out.println(
+						"Invalid username, please enter a valid admin account (must contain the word admin in it)");
+				continue;
+			}
+			System.out.println("Username accepted.");
+			int count = 3;
+			boolean valid = false;
+			while (count > 0) {
+				System.out.println("Please enter your password");
+				String password = cons.nextLine();
+				if (password.equals(a.getPassword())) {
+					valid = true;
+					break;
+				}
+				System.out.println("Invalid password, please re-enter (" + count + " attempt(s) remaining)");
+				count--;
+			}
+			if (valid) {
+				System.out.println("Authorized.  Please proceed");
+				return true;
+			} else {
+				System.out.println("Failed to log in.  Returning to menu...");
+				return false;
+			}
+		}
 	}
 
 	// validate customer credentials for login
@@ -131,7 +207,7 @@ public class App {
 
 	// log in customer
 	public void loginCustomer() {
-		if (Customer.customerList.size() < 2) {
+		if (Customer.customerList.isEmpty()) {
 			System.out.println("Congratulations, you are our first customer.  Please create a new user account.");
 			makeNewCustomerAccount();
 			System.out.println("Successfully created new account.  Please log in.");
@@ -158,11 +234,11 @@ public class App {
 				validEntry = true;
 		}
 		System.out.println("Authorized.");
-		showCustomerMenu(cust);
+		showCustomerBankAccountOptionsMenu(cust);
 	}
 
 	// show customer action menu
-	public void showCustomerMenu(Customer c) {
+	public void showCustomerBankAccountOptionsMenu(Customer c) {
 		Account a = null;
 		while (a == null) {
 			System.out.println("Welcome, " + c.getFirstName());
@@ -170,9 +246,10 @@ public class App {
 			if (a == null) {
 				System.out.println("There are no Active bank accounts yet.  Creating a new one.");
 				a = createNewBankAccount(c);
-			} else
+			} else {
 				System.out.println("Welcome back, " + c.getFirstName() + ".");
-
+				System.out.println("Account information: " + a.toString());
+			}
 			if (a == null) {
 				System.out.println("Account creation failed.");
 			}
@@ -287,7 +364,7 @@ public class App {
 					return new Account(c);
 
 				case 2:
-					if (Customer.customerList.size() < 3) {
+					if (Customer.customerList.size() < 2) {
 						System.out.println("Cannot create a joint account: Not enough customers.");
 						return null;
 					}
@@ -302,11 +379,11 @@ public class App {
 		}
 		Account a = new Account(c);
 		files.writeAccountFile();
-		return new Account(c);
+		return a;
 	}
 
 	// used to find a bank account based on a username
-	public Account findAnAccount(User u) {
+	public Account findAnAccount(Customer u) {
 		for (int i = 0; i < Account.pendingAccounts.size(); i++) {
 			if (Account.pendingAccounts.get(i).getMember().getUsername().contentEquals(u.getUsername()))
 				return Account.pendingAccounts.get(i);
@@ -349,16 +426,26 @@ public class App {
 			System.out.println("Please enter the username of the second account holder (" + attemptsRemaining
 					+ " attempt(s) remaining)");
 			String user = cons.nextLine();
-			c2 = findACustomer(user);
-			if (c2 == null) {
-				System.out.println("Invalid username, please try again");
+			try {
+				c2 = findACustomer(user);
+				if (c2 == null) {
+					attemptsRemaining--;
+				} else {
+					attemptsRemaining=0;
+					break;
+				}
+			} catch (NullPointerException e) {
+				System.out.println("Invalid account entered.");
 				attemptsRemaining--;
-				continue;
 			}
 		}
-		if (c2 == null) {
+		try {
+			if (c2 == null) {
+				System.out.println("Failed to create joint account.");
+				return null;
+			}
+		} catch (NullPointerException e) {
 			System.out.println("Failed to create joint account.");
-			return null;
 		}
 		return new JointAccount(c1, c2);
 	}
@@ -369,7 +456,7 @@ public class App {
 		if (verifyCustomer(u))
 			accountVerbage = "account holder";
 		if (verifyEmployee(u))
-			accountVerbage = "customer";
+			accountVerbage = "employee";
 		if (verifyAdministrator(u))
 			accountVerbage = "administrator";
 		String[] credentials = new String[4];
@@ -454,12 +541,12 @@ public class App {
 
 	// find an employee or administrator
 	public Employee findAnEmployee(String username) {
-		if (Employee.employeeList.size() < 3) {
+		if (Employee.employeeList.isEmpty()) {
 			System.out.println("No employees found");
 			return null;
 		}
 
-		for (int i = 2; i < Employee.employeeList.size(); i++) {
+		for (int i = 0; i < Employee.employeeList.size(); i++) {
 			if (Employee.employeeList.get(i).getUsername().equals(username)) {
 				System.out.println("Found employee");
 				return Employee.employeeList.get(i);
@@ -512,28 +599,65 @@ public class App {
 
 	public void showAccountActionMenu(User user, Account a) {
 		if (a == null) { // came from customer menu as admin or employee
-			System.out.println("Please choose an account to act on");
-			if (Customer.customerList.size() < 2
+			if (Customer.customerList.size() < 1
 					|| Account.activeAccounts.size() + Account.pendingAccounts.size() == 0) {
 				System.out.println(
 						"No Bank Accounts to act on.  Please let a customer use this program to allow operation.");
 				return;
+			} else {
+				boolean success = false;
+				while (!success) {
+					System.out.println("Please choose an account to act on");
+					System.out.println("Here is a list of available accounts: ");
+					System.out.println("Pending accounts");
+					for (Account ac : Account.pendingAccounts) {
+						System.out.print("ID: " + ac.getAccountId() + " username: " + ac.getMember().getUsername());
+					}
+					System.out.println();
+					System.out.println("Active accounts");
+					for (Account ac : Account.activeAccounts) {
+						System.out.print("ID: " + ac.getAccountId() + "username: " + ac.getMember().getUsername());
+					}
+					System.out.println();
+					String choice = "";
+					while (choice.equals("")) {
+						try {
+							System.out.println("Please select an account by username to work with.");
+							choice = cons.nextLine();
+							a = findAnAccount(findACustomer(choice));
+						} catch (NullPointerException e) {
+							System.out.println("No account found with that username attached.");
+							choice = "";
+						}
+						success = true;
+					}
+				}
 			}
 		}
-		if (a.isPendingApproval() && user.getClass().equals(Customer.class))
+		if (a.isPendingApproval() && user.getClass().equals(Customer.class)) {
 			System.out.println("Account ID " + a.getAccountId() + " for Customer " + a.getMember().getFirstName() + " "
 					+ a.getMember().getLastName() + " is pending approval and cannot be acted on yet.");
+			System.out.println("Would you like to create a new joint account? 1 for yes, 2 for no.");
+			while(true) {
+				int choice = cons.nextInt();
+				if(choice == 1) {
+					System.out.println("Going to joint account creation...");
+					createJointAccount((Customer)user);
+					break;
+				}
+			}
+		}
 		else {
 			boolean isDone = false;
 			while (!isDone) {
 				System.out.println("Please choose from one of the following options: ");
 				if (verifyEmployee(user) || verifyAdministrator(user)) {
 					System.out.println("Enter V to view account information");
-					System.out.println("Enter A to view and act on accounts pending approval");
+					System.out.println("Enter A to view and approve accounts pending approval");
 				}
 				if (verifyAdministrator(user))
 					System.out.println("Enter C to cancel an account");
-				if (verifyAdministrator(user) || user.getClass().equals(Customer.class)) {
+				if (verifyAdministrator(user) || verifyCustomer(user)) {
 					System.out.println("Enter D to make a deposit");
 					System.out.println("Enter W to withdraw funds");
 					System.out.println("Enter T to transfer funds between accounts");
@@ -547,7 +671,7 @@ public class App {
 							doAdminAccountView(user, a);
 							break;
 						}
-						if (verifyEmployee(user)) {
+						if (verifyEmployee((Employee)user)) {
 							showAllAccounts(user, a);
 							break;
 						}
@@ -561,7 +685,7 @@ public class App {
 						System.out.println("Invalid Selection");
 						break;
 					case 'a':
-						if (!verifyEmployee(user)) {
+						if (verifyEmployee(user)) {
 							viewPendingAccounts(user);
 							break;
 						}
@@ -600,7 +724,7 @@ public class App {
 	}
 
 	private void viewPendingAccounts(User user) {
-		if (user == null || !verifyAdministrator(user) || !verifyEmployee(user)) {
+		if (!verifyAdministrator(user) && !verifyEmployee(user)) {
 			System.out.println("Invalid user credentials.  How'd you get here?");
 			return;
 		}
@@ -608,7 +732,7 @@ public class App {
 	}
 
 	private void doAdminCancel(User user) {
-		if (user == null || !verifyAdministrator(user)) {
+		if (!verifyAdministrator(user)) {
 			System.out.println("Invalid user credentials.  How'd you get here?");
 			return;
 		}
@@ -616,14 +740,14 @@ public class App {
 	}
 
 	private void showAllAccounts(User user, Account a) {
-		if (user == null || !verifyAdministrator(user) || !verifyEmployee(user)) {
+		if (!verifyEmployee(user)) {
 			System.out.println("Invalid user credentials.  How'd you get here?");
 			return;
 		}
 	}
 
 	private void doAdminAccountView(User user, Account a) {
-		if (user == null || !verifyAdministrator(user)) {
+		if (!verifyAdministrator(user)) {
 			System.out.println("Invalid user credentials.  How'd you get here?");
 			return;
 		}
@@ -633,7 +757,7 @@ public class App {
 		User emp = placeHolderEmployee;
 		System.out.println("Checking employee accounts...");
 
-		if (checkForAnyEmployee()) {
+		if (checkForAnyEmployee() && Employee.employeeList.size() > 1) {
 			System.out.println("Found employee account.");
 			while (true) {
 				System.out.println("Please enter your username.");
@@ -669,15 +793,15 @@ public class App {
 
 	// used to log in as administrator
 	public void doAdminLogin() {
-		User emp = null;
+		Administrator emp = placeHolderAdmin;
 		System.out.println("Checking admin accounts...");
 		if (checkForAnyAdministrator()) {
 			System.out.println("Found administrator account.");
 			while (true) {
 				System.out.println("Please enter your username.");
-				String username = cons.nextLine();
-				emp = findAnEmployee(username);
-				if (!username.contains("admin") || !username.equals(emp.getUsername()) || emp == null) {
+				String username = cons.next();
+				emp = (Administrator) findAnEmployee(username);
+				if (!username.contains("admin") || !username.equals(emp.getUsername())) {
 					System.out.println(
 							"Invalid username, please enter a valid admin account (must contain the word admin in it)");
 					continue;
@@ -719,5 +843,9 @@ public class App {
 
 	public boolean verifyEmployee(User user) {
 		return user.getClass().equals(Employee.class);
+	}
+
+	public boolean verifyJointAccount(Account a) {
+		return a.getClass().equals(JointAccount.class);
 	}
 }
