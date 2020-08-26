@@ -46,7 +46,7 @@ public class FileHandler {
 
 	public boolean writeEmployeeFile() {
 		if (!Employee.employeeList.isEmpty()) {
-			System.out.println("Found user info file.");
+			System.out.println("Found employee file.");
 			try {
 				FileOutputStream fo = new FileOutputStream(employeeFile);
 				ObjectOutputStream  oo = new ObjectOutputStream(fo);
@@ -55,50 +55,6 @@ public class FileHandler {
 					oo.writeObject(Customer.customerList.get(i));
 				}*/
 				oo.writeObject(Employee.employeeList);
-				oo.close();
-				fo.close();
-			}catch (IOException e) {
-				System.out.println("No file write occurred for user info");
-			}
-		}
-		System.out.println("User list was empty.");
-		return false;
-	}
-
-	public boolean readUserInfoFile() {
-		if (userInfoFile.exists()) {
-			System.out.println("Found customers.");
-			try {
-				FileInputStream fi = new FileInputStream(userInfoFile);
-				ObjectInputStream  oo = new ObjectInputStream(fi);
-				/*int len = oo.readInt();
-				for(int i=0;i<len;i++) {
-					Customer.customerList.add((Customer)oo.readObject());
-				}*/
-				UserAccount.userList = (ArrayList<UserAccount>) oo.readObject();
-				oo.close();
-				fi.close();
-			}catch (IOException e) {
-				System.out.println("No file read occurred for customers");
-			} catch (ClassNotFoundException e) {
-				
-			}
-		}
-		System.out.println("Customer list was empty.");
-		return false;
-	}
-
-	public boolean writeUserInfoFile() {
-		if (!UserAccount.userList.isEmpty()) {
-			System.out.println("Found user info file.");
-			try {
-				FileOutputStream fo = new FileOutputStream(userInfoFile);
-				ObjectOutputStream  oo = new ObjectOutputStream(fo);
-				/*oo.writeInt(Customer.customerList.size());
-				for(int i=0;i<Customer.customerList.size();i++) {
-					oo.writeObject(Customer.customerList.get(i));
-				}*/
-				oo.writeObject(UserAccount.userList);
 				oo.close();
 				fo.close();
 			}catch (IOException e) {
@@ -195,7 +151,7 @@ public class FileHandler {
 				System.out.println("No file write occurred for customers");
 			}
 		}
-		System.out.println("Customer list was empty.");
+		
 		return false;
 	}
 

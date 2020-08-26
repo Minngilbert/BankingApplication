@@ -6,7 +6,7 @@ public class TestWriter {
 	 * 
 	 * Please do not test, I am just here to make sure serialization and deserialization works
 	 */
-	public static void main(String[] args) {
+	/*public static void main(String[] args) {
 		FileHandler file = new FileHandler();
 		Customer c = new Customer("C", "C", "user", "pass");
 		c = new Customer("A", "A", "user", "pass");
@@ -45,6 +45,6 @@ public class TestWriter {
 		Employee e = new Employee("Someone");
 		Administrator ad = new Administrator("The badministrator", 1);
 		
-	}
+	}*/
 
 }
