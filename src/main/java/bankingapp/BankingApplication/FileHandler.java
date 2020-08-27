@@ -12,11 +12,9 @@ public class FileHandler {
 	private File employeeFile;
 	private File accountFile;
 	private File customerFile;
-	private File userInfoFile;
 
 	public FileHandler() {
 		employeeFile = new File("employeelist.list");
-		userInfoFile = new File("users.list");
 		accountFile = new File("accountlist.list");
 		customerFile = new File("customerlist.list");
 	}

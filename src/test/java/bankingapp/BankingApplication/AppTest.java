@@ -1,7 +1,7 @@
 package bankingapp.BankingApplication;
 
+import bankingapp.BankingApplication.*;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 class AppTest {
@@ -20,10 +20,10 @@ class AppTest {
 	//Transaction t = new Transaction('w',a, a, 100.0, 12.0);
 	App ap = new App();
 	
-	
 	@Test
 	void testDeposit() {
-		Assertions.assertEquals(400, ap.testdoDeposit(c2, a2));
+		ap.setDebug(true);
+		Assertions.assertEquals(400, ap.doDeposit(c2, a2));
 	}
 	
 	/*
@@ -32,7 +32,7 @@ class AppTest {
 	 */
 	@Test
 	void testGetBalanceDeposited() {
-		ap.testdoDeposit(c2, a2);
+		ap.doDeposit(c2, a2);
 		Assertions.assertEquals(400, a2.getBalance());
 	}
 	
@@ -41,8 +41,8 @@ class AppTest {
 	 */
 	@Test 
 	void testWithdrawal() {
-		ap.testdoDeposit(c2, a2);
-		Assertions.assertEquals(399.0, ap.testdoWithdrawal(c2, a2));
+		ap.doDeposit(c2, a2);
+		Assertions.assertEquals(399.0, ap.doWithdrawal(c2, a2));
 	}
 	
 	/*
@@ -51,8 +51,8 @@ class AppTest {
 	 */
 	@Test
 	void testGetBalanceWithdraw() {
-		ap.testdoDeposit(c2, a2);
-		ap.testdoWithdrawal(c2, a2);
+		ap.doDeposit(c2, a2);
+		ap.doWithdrawal(c2, a2);
 		Assertions.assertEquals(399, a2.getBalance());
 	}
 
@@ -64,13 +64,13 @@ class AppTest {
 	*/
 	@Test
 	void TestCreateNewBankAccount() {
-		Assertions.assertNotEquals(null, ap.testcreateNewBankAccount(c3, 1));
+		Assertions.assertNotEquals(null, ap.createNewBankAccount(c3));
 	}
 	
 	
 	@Test
 	void TestCreateNewBankAccountPendingArray() {
-		Account ac = ap.testcreateNewBankAccount(c3, 1);
+		Account ac = ap.createNewBankAccount(c3);
 		Assertions.assertEquals(3,ac.getPendingAccounts().size() );
 	}
 	
@@ -80,18 +80,18 @@ class AppTest {
 	 */	
 	@Test
 	void TestCreateNewBankAccountJointAccount() {
-		Assertions.assertNotEquals(null, ap.testcreateNewBankAccount(c3, 2));
+		Assertions.assertNotEquals(null, ap.createNewBankAccount(c3));
 	}
 	
 	@Test
 	void TestCreateNewJointAccount() {
-		JointAccount jtc = ap.testcreateJointAccount(c3);
+		JointAccount jtc = ap.createJointAccount(c3);
 		Assertions.assertNotEquals(null,jtc.getActiveAccounts());
 	}
 	 
 	@Test
 	void TestCreateNewJointAccountPendingArray() {
-		JointAccount jtc = ap.testcreateJointAccount(c3);
+		JointAccount jtc = ap.createJointAccount(c3);
 		Assertions.assertNotEquals(3,jtc.getActiveAccounts());
 	}
 	
@@ -161,7 +161,7 @@ class AppTest {
 
 	@Test
 	void TestdoTransfer() {
-		ap.testdoDeposit(c2, a2);
-		Assertions.assertEquals(200, ap.testdoTransfer(c2, a2));
+		ap.doDeposit(c2, a2);
+		Assertions.assertEquals(200, ap.doTransfer(c2, a2));
 	}
 }

@@ -73,28 +73,6 @@ public class Customer extends User implements Serializable {
 		}
 		return account.getBalance();
 	}
-
-	public boolean transfer(Account fromAcc, Account toAcc, double amount) {
-			double beforeTranFr = fromAcc.getBalance();
-			double beforeTranTo = toAcc.getBalance();
-			
-			deposit(toAcc, amount);
-			withdraw(fromAcc, amount);
-
-			double currBalanceFr = fromAcc.getBalance()-amount;
-			double currBalanceTo = toAcc.getBalance() + amount;
-			
-			//check to make sure balance was updated
-			if((beforeTranFr ==  currBalanceFr) && (beforeTranTo ==  currBalanceTo)) {
-				return true;
-			}
-			
-			return false;
-	}
-	
-	public void registerForAccount(int accountNumber) {
-		Account newCustomer = new Account(this);
-	}
 	
 	public Account getCustomerAccount() {
 		Account acc = new Account();
@@ -113,7 +91,7 @@ public class Customer extends User implements Serializable {
 	}
 	
 	public String toString() {
-		return firstName + " " + lastName +" ";
+		return "Name: " + firstName + " " + lastName +" Username: " + username;
 	}
 	
 	public String getPassword() {

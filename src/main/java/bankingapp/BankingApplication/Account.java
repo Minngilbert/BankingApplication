@@ -25,7 +25,7 @@ public class Account implements Serializable {
 		this.balance = 0; //Start with a balance of zero
 		this.pendingApproval = true;
 		pendingAccounts.add(this);
-		
+		accountId=accountGenerator++;
 	}
 	
 	public Account() {
@@ -60,9 +60,11 @@ public class Account implements Serializable {
 	
 	public void removePendingAccount(Account account) {
 		pendingAccounts.remove(account);
+		
 	}
 	
 	public void promoteAccountToActive(Account account) {
+		pendingApproval=false;
 		pendingAccounts.remove(account);
 		activeAccounts.add(account);
 	}
@@ -85,7 +87,8 @@ public class Account implements Serializable {
 	}
 	
 	public String toString() {
-		return member.getFirstName() + " " + member.getLastName() +" "+ this.accountId + "  " + this.balance; 
+		return "ID: " + accountId + " Owner Name: " + member.getFirstName() + " " + member.getLastName() +" "+ 
+				"Balance: $" + this.balance + " Active? " + (pendingApproval? "No" : "Yes"); 
 	}
 	
 	public void showAccountInfo() {
