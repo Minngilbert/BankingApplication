@@ -817,7 +817,7 @@ public class App {
 		}
 		
 		//Shows all account before starting
-		doAdminAccountView(user);
+		showAllAccounts(user);
 		
 		int attemptsRemaining = 3;
 		Administrator adm =(Administrator)user;
@@ -861,7 +861,7 @@ public class App {
 		}
 	}
 
-	private void doAdminAccountView(User user) {
+	private void doAdminAccountView(User user, Account a) {
 		if (!verifyAdministrator(user)) {
 			System.out.println("Invalid user credentials.  How'd you get here?");
 			return;
